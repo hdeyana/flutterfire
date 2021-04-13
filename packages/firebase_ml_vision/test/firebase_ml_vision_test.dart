@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -19,8 +17,7 @@ void main() {
     dynamic returnValue;
 
     setUp(() {
-      FirebaseVision.channel
-          .setMockMethodCallHandler((MethodCall methodCall) async {
+      FirebaseVision.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
 
         switch (methodCall.method) {
@@ -39,8 +36,7 @@ void main() {
     });
 
     group('$FirebaseVisionImageMetadata', () {
-      final TextRecognizer recognizer =
-          FirebaseVision.instance.textRecognizer();
+      final TextRecognizer recognizer = FirebaseVision.instance.textRecognizer();
 
       setUp(() {
         returnValue = <dynamic, dynamic>{
@@ -50,8 +46,7 @@ void main() {
       });
 
       test('default serialization', () async {
-        final FirebaseVisionImageMetadata metadata =
-            FirebaseVisionImageMetadata(
+        final FirebaseVisionImageMetadata metadata = FirebaseVisionImageMetadata(
           rawFormat: 35,
           size: const Size(1, 1),
           planeData: <FirebaseVisionImagePlaneMetadata>[
@@ -62,8 +57,7 @@ void main() {
             ),
           ],
         );
-        final FirebaseVisionImage image =
-            FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
+        final FirebaseVisionImage image = FirebaseVisionImage.fromBytes(Uint8List(0), metadata);
         await recognizer.processImage(image);
 
         expect(log, <Matcher>[
@@ -97,9 +91,9 @@ void main() {
     });
 
     group('$BarcodeDetector', () {
-      BarcodeDetector detector;
-      FirebaseVisionImage image;
-      List<dynamic> returnBarcodes;
+      late BarcodeDetector detector;
+      late FirebaseVisionImage image;
+      List<dynamic>? returnBarcodes;
 
       setUp(() {
         detector = FirebaseVision.instance.barcodeDetector();
@@ -122,7 +116,7 @@ void main() {
       });
 
       test('detectInImage unknown', () async {
-        returnBarcodes[0]['valueType'] = BarcodeValueType.unknown.index;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.unknown.index;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
@@ -164,18 +158,18 @@ void main() {
           'type': BarcodeEmailType.home.index,
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.email.index;
-        returnBarcodes[0]['email'] = email;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.email.index;
+        returnBarcodes![0]['email'] = email;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.email);
-        expect(barcode.email.address, 'a');
-        expect(barcode.email.body, 'b');
-        expect(barcode.email.subject, 's');
-        expect(barcode.email.type, BarcodeEmailType.home);
+        expect(barcode.email!.address, 'a');
+        expect(barcode.email!.body, 'b');
+        expect(barcode.email!.subject, 's');
+        expect(barcode.email!.type, BarcodeEmailType.home);
       });
 
       test('detectInImage phone', () async {
@@ -184,52 +178,46 @@ void main() {
           'type': BarcodePhoneType.fax.index,
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.phone.index;
-        returnBarcodes[0]['phone'] = phone;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.phone.index;
+        returnBarcodes![0]['phone'] = phone;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.phone);
-        expect(barcode.phone.number, '000');
-        expect(barcode.phone.type, BarcodePhoneType.fax);
+        expect(barcode.phone!.number, '000');
+        expect(barcode.phone!.type, BarcodePhoneType.fax);
       });
 
       test('detectInImage sms', () async {
-        final Map<dynamic, dynamic> sms = <dynamic, dynamic>{
-          'phoneNumber': '000',
-          'message': 'm'
-        };
+        final Map<dynamic, dynamic> sms = <dynamic, dynamic>{'phoneNumber': '000', 'message': 'm'};
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.sms.index;
-        returnBarcodes[0]['sms'] = sms;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.sms.index;
+        returnBarcodes![0]['sms'] = sms;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.sms);
-        expect(barcode.sms.phoneNumber, '000');
-        expect(barcode.sms.message, 'm');
+        expect(barcode.sms!.phoneNumber, '000');
+        expect(barcode.sms!.message, 'm');
       });
 
       test('detectInImage url', () async {
-        final Map<dynamic, dynamic> url = <dynamic, dynamic>{
-          'title': 't',
-          'url': 'u'
-        };
+        final Map<dynamic, dynamic> url = <dynamic, dynamic>{'title': 't', 'url': 'u'};
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.url.index;
-        returnBarcodes[0]['url'] = url;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.url.index;
+        returnBarcodes![0]['url'] = url;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.url);
-        expect(barcode.url.title, 't');
-        expect(barcode.url.url, 'u');
+        expect(barcode.url!.title, 't');
+        expect(barcode.url!.url, 'u');
       });
 
       test('detectInImage wifi', () async {
@@ -239,17 +227,17 @@ void main() {
           'encryptionType': BarcodeWiFiEncryptionType.wep.index,
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.wifi.index;
-        returnBarcodes[0]['wifi'] = wifi;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.wifi.index;
+        returnBarcodes![0]['wifi'] = wifi;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.wifi);
-        expect(barcode.wifi.ssid, 's');
-        expect(barcode.wifi.password, 'p');
-        expect(barcode.wifi.encryptionType, BarcodeWiFiEncryptionType.wep);
+        expect(barcode.wifi!.ssid, 's');
+        expect(barcode.wifi!.password, 'p');
+        expect(barcode.wifi!.encryptionType, BarcodeWiFiEncryptionType.wep);
       });
 
       test('detectInImage geoPoint', () async {
@@ -258,17 +246,16 @@ void main() {
           'longitude': 0.3,
         };
 
-        returnBarcodes[0]['valueType'] =
-            BarcodeValueType.geographicCoordinates.index;
-        returnBarcodes[0]['geoPoint'] = geoPoint;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.geographicCoordinates.index;
+        returnBarcodes![0]['geoPoint'] = geoPoint;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.geographicCoordinates);
-        expect(barcode.geoPoint.latitude, 0.2);
-        expect(barcode.geoPoint.longitude, 0.3);
+        expect(barcode.geoPoint!.latitude, 0.2);
+        expect(barcode.geoPoint!.longitude, 0.3);
       });
 
       test('detectInImage contactInfo', () async {
@@ -280,12 +267,7 @@ void main() {
             }
           ],
           'emails': <dynamic>[
-            <dynamic, dynamic>{
-              'type': BarcodeEmailType.home.index,
-              'address': 'a',
-              'body': 'b',
-              'subject': 's'
-            },
+            <dynamic, dynamic>{'type': BarcodeEmailType.home.index, 'address': 'a', 'body': 'b', 'subject': 's'},
           ],
           'name': <dynamic, dynamic>{
             'formattedName': 'fn',
@@ -307,32 +289,32 @@ void main() {
           'organization': 'o'
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.contactInfo.index;
-        returnBarcodes[0]['contactInfo'] = contact;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.contactInfo.index;
+        returnBarcodes![0]['contactInfo'] = contact;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.contactInfo);
-        expect(barcode.contactInfo.addresses[0].type, BarcodeAddressType.work);
-        expect(barcode.contactInfo.addresses[0].addressLines[0], 'al');
-        expect(barcode.contactInfo.emails[0].type, BarcodeEmailType.home);
-        expect(barcode.contactInfo.emails[0].address, 'a');
-        expect(barcode.contactInfo.emails[0].body, 'b');
-        expect(barcode.contactInfo.emails[0].subject, 's');
-        expect(barcode.contactInfo.name.first, 'f');
-        expect(barcode.contactInfo.name.last, 'l');
-        expect(barcode.contactInfo.name.middle, 'm');
-        expect(barcode.contactInfo.name.formattedName, 'fn');
-        expect(barcode.contactInfo.name.prefix, 'p');
-        expect(barcode.contactInfo.name.suffix, 's');
-        expect(barcode.contactInfo.name.pronunciation, 'pn');
-        expect(barcode.contactInfo.phones[0].type, BarcodePhoneType.mobile);
-        expect(barcode.contactInfo.phones[0].number, '012');
-        expect(barcode.contactInfo.urls[0], 'url');
-        expect(barcode.contactInfo.jobTitle, 'j');
-        expect(barcode.contactInfo.organization, 'o');
+        expect(barcode.contactInfo!.addresses![0].type, BarcodeAddressType.work);
+        expect(barcode.contactInfo!.addresses![0].addressLines[0], 'al');
+        expect(barcode.contactInfo!.emails![0].type, BarcodeEmailType.home);
+        expect(barcode.contactInfo!.emails![0].address, 'a');
+        expect(barcode.contactInfo!.emails![0].body, 'b');
+        expect(barcode.contactInfo!.emails![0].subject, 's');
+        expect(barcode.contactInfo!.name!.first, 'f');
+        expect(barcode.contactInfo!.name!.last, 'l');
+        expect(barcode.contactInfo!.name!.middle, 'm');
+        expect(barcode.contactInfo!.name!.formattedName, 'fn');
+        expect(barcode.contactInfo!.name!.prefix, 'p');
+        expect(barcode.contactInfo!.name!.suffix, 's');
+        expect(barcode.contactInfo!.name!.pronunciation, 'pn');
+        expect(barcode.contactInfo!.phones![0].type, BarcodePhoneType.mobile);
+        expect(barcode.contactInfo!.phones![0].number, '012');
+        expect(barcode.contactInfo!.urls![0], 'url');
+        expect(barcode.contactInfo!.jobTitle, 'j');
+        expect(barcode.contactInfo!.organization, 'o');
       });
 
       test('detectInImage calendarEvent', () async {
@@ -346,22 +328,21 @@ void main() {
           'end': '2018-08-05 01:23:45.456',
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.calendarEvent.index;
-        returnBarcodes[0]['calendarEvent'] = calendar;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.calendarEvent.index;
+        returnBarcodes![0]['calendarEvent'] = calendar;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.calendarEvent);
-        expect(barcode.calendarEvent.eventDescription, 'e');
-        expect(barcode.calendarEvent.location, 'l');
-        expect(barcode.calendarEvent.organizer, 'o');
-        expect(barcode.calendarEvent.status, 'st');
-        expect(barcode.calendarEvent.summary, 'sm');
-        expect(
-            barcode.calendarEvent.start, DateTime(2017, 7, 4, 12, 34, 56, 123));
-        expect(barcode.calendarEvent.end, DateTime(2018, 8, 5, 1, 23, 45, 456));
+        expect(barcode.calendarEvent!.eventDescription, 'e');
+        expect(barcode.calendarEvent!.location, 'l');
+        expect(barcode.calendarEvent!.organizer, 'o');
+        expect(barcode.calendarEvent!.status, 'st');
+        expect(barcode.calendarEvent!.summary, 'sm');
+        expect(barcode.calendarEvent!.start, DateTime(2017, 7, 4, 12, 34, 56, 123));
+        expect(barcode.calendarEvent!.end, DateTime(2018, 8, 5, 1, 23, 45, 456));
       });
 
       test('detectInImage driversLicense', () async {
@@ -382,28 +363,28 @@ void main() {
           'issuingCountry': 'ic'
         };
 
-        returnBarcodes[0]['valueType'] = BarcodeValueType.driverLicense.index;
-        returnBarcodes[0]['driverLicense'] = driver;
+        returnBarcodes![0]['valueType'] = BarcodeValueType.driverLicense.index;
+        returnBarcodes![0]['driverLicense'] = driver;
         returnValue = returnBarcodes;
 
         final List<Barcode> barcodes = await detector.detectInImage(image);
 
         final Barcode barcode = barcodes[0];
         expect(barcode.valueType, BarcodeValueType.driverLicense);
-        expect(barcode.driverLicense.firstName, 'fn');
-        expect(barcode.driverLicense.middleName, 'mn');
-        expect(barcode.driverLicense.lastName, 'ln');
-        expect(barcode.driverLicense.gender, 'g');
-        expect(barcode.driverLicense.addressCity, 'ac');
-        expect(barcode.driverLicense.addressState, 'a');
-        expect(barcode.driverLicense.addressStreet, 'st');
-        expect(barcode.driverLicense.addressZip, 'az');
-        expect(barcode.driverLicense.birthDate, 'bd');
-        expect(barcode.driverLicense.documentType, 'dt');
-        expect(barcode.driverLicense.licenseNumber, 'l');
-        expect(barcode.driverLicense.expiryDate, 'ed');
-        expect(barcode.driverLicense.issuingDate, 'id');
-        expect(barcode.driverLicense.issuingCountry, 'ic');
+        expect(barcode.driverLicense!.firstName, 'fn');
+        expect(barcode.driverLicense!.middleName, 'mn');
+        expect(barcode.driverLicense!.lastName, 'ln');
+        expect(barcode.driverLicense!.gender, 'g');
+        expect(barcode.driverLicense!.addressCity, 'ac');
+        expect(barcode.driverLicense!.addressState, 'a');
+        expect(barcode.driverLicense!.addressStreet, 'st');
+        expect(barcode.driverLicense!.addressZip, 'az');
+        expect(barcode.driverLicense!.birthDate, 'bd');
+        expect(barcode.driverLicense!.documentType, 'dt');
+        expect(barcode.driverLicense!.licenseNumber, 'l');
+        expect(barcode.driverLicense!.expiryDate, 'ed');
+        expect(barcode.driverLicense!.issuingDate, 'id');
+        expect(barcode.driverLicense!.issuingCountry, 'ic');
       });
 
       test('detectInImage no blocks', () async {
@@ -485,13 +466,10 @@ void main() {
           // without triggering a `CONST_EVAL_TYPE_BOOL_INT` error.
           // ignore: prefer_const_constructors
           final BarcodeDetectorOptions options = BarcodeDetectorOptions(
-            barcodeFormats: BarcodeFormat.code128 |
-                BarcodeFormat.dataMatrix |
-                BarcodeFormat.ean8,
+            barcodeFormats: BarcodeFormat.code128 | BarcodeFormat.dataMatrix | BarcodeFormat.ean8,
           );
 
-          final BarcodeDetector detector =
-              FirebaseVision.instance.barcodeDetector(options);
+          final BarcodeDetector detector = FirebaseVision.instance.barcodeDetector(options);
           await detector.detectInImage(image);
 
           expect(
@@ -503,7 +481,7 @@ void main() {
     });
 
     group('$FaceDetector', () {
-      List<dynamic> testFaces;
+      List<dynamic>? testFaces;
 
       setUp(() {
         testFaces = <dynamic>[
@@ -644,11 +622,11 @@ void main() {
         expect(face.trackingId, 8);
 
         for (final FaceLandmarkType type in FaceLandmarkType.values) {
-          expect(face.getLandmark(type).type, type);
+          expect(face.getLandmark(type)!.type, type);
         }
 
         Offset p(FaceLandmarkType type) {
-          return face.getLandmark(type).position;
+          return face.getLandmark(type)!.position;
         }
 
         expect(p(FaceLandmarkType.bottomMouth), const Offset(0.1, 1.1));
@@ -663,83 +641,69 @@ void main() {
         expect(p(FaceLandmarkType.rightMouth), const Offset(18.1, 19.1));
 
         List<Offset> c(FaceContourType type) {
-          return face.getContour(type).positionsList;
+          return face.getContour(type)!.positionsList;
         }
 
         expect(
           c(FaceContourType.allPoints),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.face),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.leftEye),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.leftEyebrowBottom),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.leftEyebrowTop),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.lowerLipBottom),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.lowerLipTop),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.noseBottom),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.noseBridge),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.rightEye),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.rightEyebrowBottom),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.rightEyebrowTop),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.upperLipBottom),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
         expect(
           c(FaceContourType.upperLipTop),
-          containsAllInOrder(
-              <Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
+          containsAllInOrder(<Offset>[const Offset(1.1, 2.2), const Offset(3.3, 4.4)]),
         );
       });
 
       test('processImage with null landmark', () async {
-        testFaces[0]['landmarks']['bottomMouth'] = null;
+        testFaces![0]['landmarks']['bottomMouth'] = null;
         returnValue = testFaces;
 
         final FaceDetector detector = FirebaseVision.instance.faceDetector(
@@ -770,7 +734,7 @@ void main() {
     });
 
     group('$TextRecognizer', () {
-      TextRecognizer recognizer;
+      late TextRecognizer recognizer;
       final FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(
         'empty',
       );
@@ -1057,7 +1021,7 @@ void main() {
     });
 
     group('Cloud $TextRecognizer', () {
-      TextRecognizer recognizer;
+      late TextRecognizer recognizer;
       final image = FirebaseVisionImage.fromFilePath(
         'empty',
       );
@@ -1308,8 +1272,7 @@ void main() {
           textModelType: CloudTextModelType.dense,
         );
 
-        final recognizerWithOptions =
-            FirebaseVision.instance.cloudTextRecognizer(options);
+        final recognizerWithOptions = FirebaseVision.instance.cloudTextRecognizer(options);
         final text = await recognizerWithOptions.processImage(image);
 
         expect(text.text, 'testext');
@@ -1385,37 +1348,32 @@ void main() {
         expect(log, <Matcher>[]);
       });
 
-      test('when given wrong input on processing an image fails', () async {
-        expect(
-            () => recognizer.processImage(null),
-            throwsA(isA<AssertionError>().having((e) => e.toString(), 'message',
-                contains("'visionImage != null': is not true"))));
-      });
+      // test('when given wrong input on processing an image fails', () async {
+      //   expect(
+      //       () => recognizer.processImage(null),
+      //       throwsA(isA<AssertionError>().having((e) => e.toString(), 'message',
+      //           contains("'visionImage != null': is not true"))));
+      // });
 
-      test('when given wrong null options', () async {
-        expect(
-            () => recognizer.processImage(null),
-            throwsA(isA<AssertionError>().having((e) => e.toString(), 'message',
-                contains("'visionImage != null': is not true"))));
-      });
+      // test('when given wrong null options', () async {
+      //   expect(
+      //       () => recognizer.processImage(null),
+      //       throwsA(isA<AssertionError>().having((e) => e.toString(), 'message',
+      //           contains("'visionImage != null': is not true"))));
+      // });
 
       group('throws an exception when native API fails to', () {
         const errorMessage = 'There is some problem with a call';
 
         test('process an image', () async {
-          FirebaseVision.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          FirebaseVision.channel.setMockMethodCallHandler((MethodCall methodCall) async {
             throw Exception(errorMessage);
           });
-          expect(
-              recognizer.processImage(image),
-              throwsA(isA<PlatformException>().having(
-                  (e) => e.toString(), 'message', contains(errorMessage))));
+          expect(recognizer.processImage(image), throwsA(isA<PlatformException>().having((e) => e.toString(), 'message', contains(errorMessage))));
         });
 
         test('close', () async {
-          FirebaseVision.channel
-              .setMockMethodCallHandler((MethodCall methodCall) async {
+          FirebaseVision.channel.setMockMethodCallHandler((MethodCall methodCall) async {
             switch (methodCall.method) {
               case 'TextRecognizer#processImage':
                 return returnValue;
@@ -1428,8 +1386,7 @@ void main() {
           expect(
             recognizer.close(),
             throwsA(
-              isA<PlatformException>().having(
-                  (e) => e.toString(), 'message', contains(errorMessage)),
+              isA<PlatformException>().having((e) => e.toString(), 'message', contains(errorMessage)),
             ),
           );
         });
